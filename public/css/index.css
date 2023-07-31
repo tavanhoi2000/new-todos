@@ -1,0 +1,16 @@
+.stt {
+    width: 10%;
+    border-right: 1px solid #ccc;
+}
+.level {
+    width: 15%;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+.button {
+    display: flex;
+    justify-content: space-between;
+}
+.action {
+    width: 20%;
+}

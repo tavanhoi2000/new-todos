@@ -1,18 +1,16 @@
-import { useRef, useState, useContext } from "react";
-import { UsersData } from "../App";
-import { addUser } from "../services";
+import { useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import {addTodo} from '../constants/todoAction'
 
 function AddItem() {
-  const listUser = useContext(UsersData);
+  const dispatch = useDispatch()
   const [inputValue, setInputValue] = useState("");
   const refValue = useRef();
   const [error, setError] = useState(null);
 
-  async function handleSubmit(name) {
-    if (name !== "") {
-      const res = await addUser(name);
-      const newUser = res.data;
-      listUser[1]([...listUser[0], newUser]);
+  function handleSubmit(name) {
+    if (inputValue !== "") {
+      dispatch(addTodo(name))
       setError(null);
     } else {
       setError("Không thể để trống trường này! ");
@@ -47,7 +45,7 @@ function AddItem() {
           Cancel
         </button>
         {error && (
-          <p className="text-danger" style={{ textAlign: "left" }}>
+          <p className="text-danger text-start">
             {error}
           </p>
         )}
@@ -55,5 +53,4 @@ function AddItem() {
     </form>
   );
 }
-
 export default AddItem;

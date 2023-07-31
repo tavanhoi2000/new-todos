@@ -1,9 +1,5 @@
 import axios from "axios";
 export const url = "https://jsonplaceholder.typicode.com/users/";
-
-export function getAllUsers() {
-  return axios.get(url);
-}
 export function handleDelete(id) {
   return axios.delete(url + id);
 }

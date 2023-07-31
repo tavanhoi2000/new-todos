@@ -1,6 +1,8 @@
 import { todoItemCollection } from "../configs/firebase";
-import { getDocs } from "firebase/firestore";
+import { getDocs, addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { db } from "../configs/firebase";
 const ADD_TODO = "ADD_TODO";
+const EDIT_TODO = "EDIT_TODO";
 const DELETE_TODO = "DELETE_TODO";
 const FETCH_TODO_REQUEST = "FETCH_TODO_REQUEST";
 const FETCH_TODO_SUCCESS = "FETCH_TODO_SUCCESS";
@@ -21,11 +23,44 @@ const getTodosItem = () => {
   };
 };
 
+const addTodo = (name) => {
+  return async (dispatch) => {
+    const data = {
+      name: name,
+    };
+    await addDoc(todoItemCollection, data);
+    dispatch({ type: ADD_TODO, payload: data });
+  };
+};
+
+const updateTodo = (id, name) => {
+  return async (dispatch) => {
+    const data = {
+      id: id,
+      name: name,
+    };
+    await updateDoc(todoItemCollection, data);
+    dispatch({ type: EDIT_TODO, payload: data });
+  };
+};
+
+const deleteTodo = (todoId) => {
+  return async (dispatch) => {
+    let todoDoc = doc(db, "todoItem", todoId);
+    await deleteDoc(todoDoc);
+    dispatch({ type: DELETE_TODO, payload: todoId });
+  };
+};
+
 export {
   ADD_TODO,
+  EDIT_TODO,
   DELETE_TODO,
   FETCH_TODO_REQUEST,
   FETCH_TODO_SUCCESS,
   FETCH_TODO_FAILURE,
   getTodosItem,
+  addTodo,
+  deleteTodo,
+  updateTodo,
 };

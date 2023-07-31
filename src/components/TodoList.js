@@ -1,27 +1,42 @@
 import { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {getTodosItem} from '../constants/todoAction'
-import { getAllUsers, handleDelete, handleUpdate } from "../services";
-
+import { getTodosItem, deleteTodo,updateTodo } from "../constants/todoAction";
 function TodoList() {
-  const dispatch = useDispatch()
-  const todos = useSelector((state) => state.todos)
-  const loading = useSelector((state) =>state.loading)
-  const error = useSelector((state) => state.error)
-  const [inputChange,setInputChange] = useState('')
-
+  const dispatch = useDispatch();
+  const todos = useSelector((state) => state.todos);
+  const loading = useSelector((state) => state.loading);
+  const error = useSelector((state) => state.error);
+  const [inputChange, setInputChange] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
+  const [itemId, setItemId] = useState(null);
+  const refInput = useRef();
+  const handleDelete = (todoId) => {
+    dispatch(deleteTodo(todoId));
+  };
   useEffect(() => {
-    dispatch(getTodosItem())
-  },[dispatch])
+    dispatch(getTodosItem());
+  }, [dispatch]);
 
-  const handleInputChange = (e) => {
-    setInputChange(e.target.value)
+  const cancelDelete = (e) => {
+    setItemId(null)
+    setIsEdit(false)
+  };
+
+  const changeInput = (id) => {
+    setItemId(id);
+    setIsEdit(true);
+  };
+
+  const handleSaveUpdate = (id, name) => {
+    dispatch(updateTodo(id,name))
+  };
+
+  if (loading) {
+    return <p>loading...</p>;
   }
-
-  if(loading) {
-    return <p>loading...</p>
+  if (error) {
+    return <p>Error: {error}</p>;
   }
-
 
   return (
     <div className="panel panel-success">
@@ -29,32 +44,32 @@ function TodoList() {
       <table className="table table-hover">
         <thead>
           <tr>
-            <th style={{ width: "10%" }} className="text-center">
+            <th className="text-center stt">
               #
             </th>
-            <th style={{ textAlign: "center" }}>Name</th>
-            <th style={{ width: "15%" }} className="text-center">
+            <th className="text-center">Name</th>
+            <th className="text-center level">
               Level
             </th>
-            <th style={{ width: "20%" }}>Action</th>
+            <th className="text-center action">Action</th>
           </tr>
         </thead>
         <tbody>
           {todos &&
-            todos.map((todo,index) => {
+            todos.map((todo, index) => {
               return (
-                <tr key={todo.id}>
-                  <td className="text-center">{index + 1}</td>
+                <tr key={index}>
+                  <td className="text-center stt">{index + 1}</td>
                   {isEdit ? (
                     <td>
-                      {itemId === item.id ? (
+                      {itemId === todo.id ? (
                         <input
                           type="text"
                           className="form-control"
                           placeholder="Write new name you want updadte"
-                          ref={refValue}
+                          ref={refInput}
                           value={inputChange}
-                          onChange={handleInputChange}
+                          onChange={(e) => setInputChange(e.target.value)}
                         />
                       ) : (
                         todo.name
@@ -63,11 +78,12 @@ function TodoList() {
                   ) : (
                     <td className="change-value">{todo.name}</td>
                   )}
-                  <td className="text-center">
-                    <span className="label label-danger">High</span>
+
+                  <td className="text-center level">
+                    <span className="label label-danger ">High</span>
                   </td>
-                  <td>
-                    {isEdit && itemId === todo.id ? (
+                  <td className="button">
+                    {isEdit && todo.id === itemId ? (
                       <button
                         type="button"
                         onClick={(e) => cancelDelete(e)}
@@ -78,7 +94,7 @@ function TodoList() {
                     ) : (
                       <button
                         type="button"
-                        onClick={() => handleValue(todo.id)}
+                        onClick={() => changeInput(todo.id)}
                         className="btn btn-warning btn-sm"
                       >
                         Edit
@@ -91,10 +107,10 @@ function TodoList() {
                     >
                       Delete
                     </button>
-                    {isEdit && itemId === todo.id ? (
+                    {todo ? (
                       <button
                         type="button"
-                        onClick={() => handleSaveUpdate(todo.id, todo)}
+                        onClick={() => handleSaveUpdate(todo.id, inputChange)}
                         className="btn btn-success btn-sm"
                       >
                         Save
