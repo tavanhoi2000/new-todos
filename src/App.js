@@ -1,18 +1,16 @@
 import "./App.css";
 import { Provider } from "react-redux";
 import store from "./store";
-import { createContext, useState } from "react";
 import Title from "./components/Title";
 import Search from "./components/Search";
 import AddItem from "./components/AddItem";
 import TodoList from "./components/TodoList";
-export const UsersData = createContext();
+import DataProvider from "./context/DataContext";
 
 function App() {
-  const [listUser, setListUser] = useState([]);
   return (
     <Provider store={store}>
-      <UsersData.Provider value={[listUser, setListUser]}>
+      <DataProvider>
         <div className="app">
           <div className="container">
             <Title />
@@ -30,7 +28,7 @@ function App() {
             <TodoList />
           </div>
         </div>
-      </UsersData.Provider>
+      </DataProvider>
     </Provider>
   );
 }

@@ -22,13 +22,16 @@ function TodoList() {
     setIsEdit(false)
   };
 
-  const changeInput = (id) => {
+  const changeInput = async(id) => {
     setItemId(id);
-    setIsEdit(true);
+    await setIsEdit(true);
+    refInput.current.focus();
   };
 
   const handleSaveUpdate = (id, name) => {
     dispatch(updateTodo(id,name))
+    setIsEdit(false)
+    setInputChange('')
   };
 
   if (loading) {
@@ -83,7 +86,7 @@ function TodoList() {
                     <span className="label label-danger ">High</span>
                   </td>
                   <td className="button">
-                    {isEdit && todo.id === itemId ? (
+                    {isEdit && itemId === todo.id ? (
                       <button
                         type="button"
                         onClick={(e) => cancelDelete(e)}
@@ -107,7 +110,7 @@ function TodoList() {
                     >
                       Delete
                     </button>
-                    {todo ? (
+                    {isEdit && todo.id === itemId ? (
                       <button
                         type="button"
                         onClick={() => handleSaveUpdate(todo.id, inputChange)}

@@ -1,18 +1,24 @@
-import { useState, useContext } from "react";
-import { UsersData } from "../App";
+import { useState, useContext, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { getTodosItem } from "../constants/todoAction";
+import TodoContext from "../context/DataContext";
 
 function Search() {
-  const listUser = useContext(UsersData);
+  const todos = useSelector((state) => state.todos);
   const [searchInput, setSearchInput] = useState("");
-
-  const handleSearchItem = (e) => {
-    let value = e.toLowerCase();
-    let result = [];
-    result = listUser[0].filter((data) => {
-      return data.name.search(value) !== -1;
+  const listTodo = useContext(TodoContext)
+  console.log(listTodo);
+  useEffect(() => {
+    getTodosItem()
+  })
+  const handleSearchItem = () => {
+    const listTodo = [...todos]
+    let query = searchInput
+    query = listTodo.filter((data) => {
+      return data.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
     });
 
-    listUser[1](result);
+    console.log(listTodo);
   };
 
   return (
@@ -21,9 +27,10 @@ function Search() {
         type="text"
         className="form-control"
         value={searchInput}
-        onChange={(e) => handleSearchItem(e.target.value)}
+        onChange={(e) => setSearchInput(e.target.value)}
         placeholder="Search item name"
       />
+      <button onClick={handleSearchItem}>search</button>
     </div>
   );
 }

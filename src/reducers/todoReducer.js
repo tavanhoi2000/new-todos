@@ -26,16 +26,13 @@ const todoReducer = (state = initialState, action) => {
         todos: [...state.todos, action.payload],
         loading: false,
         error: null,
-      };
+      };  
     }
     case EDIT_TODO: {
       const { id, name } = action.payload;
-      const updateTodos = state.todos.map((todo) => {
-        if (todo.id === id) {
-          return { ...todo, todos: name };
-        }
-        return todo;
-      });
+      const updateTodos = state.todos.map((todo) => 
+        todo.id === id ? {...todo, name: name} : todo
+      );
       return { ...state, todos: updateTodos };
     }
     case DELETE_TODO:
