@@ -35,14 +35,10 @@ const addTodo = (name) => {
 
 const updateTodo = (id, name) => {
   return async (dispatch) => {
-    const data = {
-      id: id,
-      name: name,
-    };
-    await updateDoc(todoItemCollection, data);
-    dispatch({ type: EDIT_TODO, payload: data });
+      await updateDoc(doc(todoItemCollection, id), { name: name });
+      dispatch({ type: EDIT_TODO, payload: { id, name } });
+    } 
   };
-};
 
 const deleteTodo = (todoId) => {
   return async (dispatch) => {
