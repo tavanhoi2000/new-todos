@@ -1,25 +1,16 @@
 import { useState, useContext, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getTodosItem } from "../constants/todoAction";
-import TodoContext from "../context/DataContext";
-
+// import { searchTodo } from "../constants/todoAction";
 function Search() {
-  const todos = useSelector((state) => state.todos);
   const [searchInput, setSearchInput] = useState("");
-  const listTodo = useContext(TodoContext)
-  console.log(listTodo);
+  const dispatch = useDispatch()
   useEffect(() => {
     getTodosItem()
   })
-  const handleSearchItem = () => {
-    const listTodo = [...todos]
-    let query = searchInput
-    query = listTodo.filter((data) => {
-      return data.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
-    });
-
-    console.log(listTodo);
-  };
+  // const handleSearchItem = (query) => {
+  //   dispatch(searchTodo(query))
+  // };
 
   return (
     <div className="input-group">
@@ -30,7 +21,7 @@ function Search() {
         onChange={(e) => setSearchInput(e.target.value)}
         placeholder="Search item name"
       />
-      <button onClick={handleSearchItem}>search</button>
+      {/* <button onClick={handleSearchItem(searchInput)}>search</button> */}
     </div>
   );
 }

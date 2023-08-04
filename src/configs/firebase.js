@@ -12,8 +12,8 @@ const firebaseConfig = {
   measurementId: "G-8DXYW9263Q",
 };
 const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+const database = getDatabase(app).ref;
 const db = getFirestore(app);
 const todoItemCollection = collection(db, "todoItem");
 
-export { db, todoItemCollection };
+export { db, todoItemCollection, database };

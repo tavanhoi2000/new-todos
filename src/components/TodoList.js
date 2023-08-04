@@ -1,38 +1,27 @@
-import { useRef, useState, useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getTodosItem, deleteTodo,updateTodo } from "../constants/todoAction";
+import update from 'immutability-helper'
+import Todo from './Todo'
+import { getTodosItem } from "../constants/todoAction";
+import { moveItem } from "../constants/todoAction";
 function TodoList() {
   const dispatch = useDispatch();
-  const todos = useSelector((state) => state.todos);
-  const loading = useSelector((state) => state.loading);
-  const error = useSelector((state) => state.error);
-  const [inputChange, setInputChange] = useState("");
-  const [isEdit, setIsEdit] = useState(false);
-  const [itemId, setItemId] = useState(null);
-  const refInput = useRef();
-  const handleDelete = (todoId) => {
-    dispatch(deleteTodo(todoId));
-  };
   useEffect(() => {
     dispatch(getTodosItem());
   }, [dispatch]);
+  const loading = useSelector((state) => state.loading);
+  const error = useSelector((state) => state.error);
+  const todos = useSelector((state) => state.todos);
+  const [listTodo, setListTodo] = useState(todos)
 
-  const cancelDelete = (e) => {
-    setItemId(null)
-    setIsEdit(false)
-  };
-
-  const changeInput = async(id) => {
-    setItemId(id);
-    await setIsEdit(true);
-    refInput.current.focus();
-  };
-
-  const handleSaveUpdate = (id, name) => {
-    dispatch(updateTodo(id,name))
-    setIsEdit(false)
-    setInputChange('')
-  };
+  const moveTodo = useCallback((dragIndex, hoverIndex) => {
+    setListTodo((prev) => {
+      return update(prev, {
+        $splice: [[dragIndex, 1], [hoverIndex, 0, prev[dragIndex]]],
+      })
+    })
+    dispatch(moveItem(dragIndex,hoverIndex))
+  }, [])
 
   if (loading) {
     return <p>loading...</p>;
@@ -58,73 +47,9 @@ function TodoList() {
           </tr>
         </thead>
         <tbody>
-          {todos &&
-            todos.map((todo, index) => {
-              return (
-                <tr key={index}>
-                  <td className="text-center stt">{index + 1}</td>
-                  {isEdit ? (
-                    <td>
-                      {itemId === todo.id ? (
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Write new name you want updadte"
-                          ref={refInput}
-                          value={inputChange}
-                          onChange={(e) => setInputChange(e.target.value)}
-                        />
-                      ) : (
-                        todo.name
-                      )}
-                    </td>
-                  ) : (
-                    <td className="change-value">{todo.name}</td>
-                  )}
-
-                  <td className="text-center level">
-                    <span className="label label-danger ">High</span>
-                  </td>
-                  <td className="button">
-                    {isEdit && itemId === todo.id ? (
-                      <button
-                        type="button"
-                        onClick={(e) => cancelDelete(e)}
-                        className="btn btn-default btn-sm"
-                      >
-                        Cancel
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => changeInput(todo.id)}
-                        className="btn btn-warning btn-sm"
-                      >
-                        Edit
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(todo.id)}
-                      className="btn btn-danger btn-sm"
-                    >
-                      Delete
-                    </button>
-                    {isEdit && todo.id === itemId ? (
-                      <button
-                        type="button"
-                        onClick={() => handleSaveUpdate(todo.id, inputChange)}
-                        className="btn btn-success btn-sm"
-                      >
-                        Save
-                      </button>
-                    ) : (
-                      ""
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
+          {todos&& todos.map((todo, index) =>
+            <Todo key={todo.id} todo={todo} index={index} moveTodo={moveTodo}  />
+          )}
         </tbody>
       </table>
     </div>
